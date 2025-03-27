@@ -4,8 +4,18 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 st.sidebar.title("Hello...!")
 
-# File uploader widget
-uploaded_file = st.sidebar.file_uploader("Choose a file")
+# Reset button to clear the app state and reload the app
+if st.sidebar.button("Reset App"):
+    st.session_state.clear()  # Clears all session state variables
+    st.experimental_rerun()   # Refreshes the app
+
+
+
+# File uploader widget with session state
+if "uploaded_file" not in st.session_state:
+    st.session_state["uploaded_file"] = None
+
+uploaded_file = st.sidebar.file_uploader("Choose a file", key="uploaded_file")
 
 if uploaded_file is not None:
     try:
@@ -13,20 +23,30 @@ if uploaded_file is not None:
         bytes_data = uploaded_file.read()
         # Decode bytes to string
         data = bytes_data.decode("utf-8")
-        df=preprocessor.preprocess(data)
-        # Display the text data
+        df = preprocessor.preprocess(data)
+        
+        # Store dataframe in session state
+        st.session_state["df"] = df
+
     except UnicodeDecodeError as e:
         st.error(f"Decode Error: {e}")
     except Exception as e:
         st.error(f"An error occurred: {e}")
-        
-    user_list=df['Sender'].unique().tolist()
+
+    user_list = df['Sender'].unique().tolist()
     user_list.sort()
-    user_list.insert(0,"Overall")
-    
-    selected_user=st.sidebar.selectbox("Show analysis for", user_list)
-    helper.fetch_stats(selected_user,df)
-    
+    user_list.insert(0, "Overall")
+
+    # Store selected user in session state
+    if "selected_user" not in st.session_state:
+        st.session_state["selected_user"] = "Overall"
+
+    selected_user = st.sidebar.selectbox("Show analysis for", user_list, key="selected_user")
+
+    # Fetch statistics
+    helper.fetch_stats(selected_user, df)
+
+
     if st.sidebar.button("Show analysis"):
         # Display the stats
         st.title("Top Stats")
