@@ -7,9 +7,7 @@ st.sidebar.title("Hello...!")
 
 # Function to reset session state
 def reset_app():
-    st.session_state.uploaded_file = None
-    st.session_state.selected_user = None
-    st.session_state.dataframe = None
+    st.session_state.clear()  # Clear all session state variables
 
 # Sidebar for file upload using a key to store it in session state
 uploaded_file = st.sidebar.file_uploader("Choose a file", key="uploaded_file")
@@ -17,7 +15,7 @@ uploaded_file = st.sidebar.file_uploader("Choose a file", key="uploaded_file")
 # Reset button to clear uploaded file, selection, and data
 if st.sidebar.button("Reset App"):
     reset_app()
-    st.experimental_rerun()  # Force Streamlit to refresh the app
+    st.rerun()  # Force Streamlit to refresh the app
 
 if uploaded_file is not None:
     try:
