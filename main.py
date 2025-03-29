@@ -18,18 +18,21 @@ if st.sidebar.button("Reset App"):
     st.rerun()  # Force Streamlit to refresh the app
 
 if uploaded_file is not None:
-    try:
+    if uploaded_file.size == 0:
+        st.error("The uploaded file is empty. Please upload a valid WhatsApp chat export.")
+    else:
+        try:
         # Read file as bytes and decode to string
-        bytes_data = uploaded_file.read()
-        data = bytes_data.decode("utf-8")
-        df = preprocessor.preprocess(data)
+         bytes_data = uploaded_file.read()
+         data = bytes_data.decode("utf-8")
+         df = preprocessor.preprocess(data)
         
-        # Store dataframe in session state
-        st.session_state.dataframe = df
-    except UnicodeDecodeError as e:
-        st.error(f"Decode Error: {e}")
-    except Exception as e:
-        st.error(f"An error occurred: {e}")
+         # Store dataframe in session state
+         st.session_state.dataframe = df
+        except UnicodeDecodeError as e:
+         st.error(f"Decode Error: {e}")
+        except Exception as e:
+         st.error(f"An error occurred: {e}")
     
     # Build user list from the dataframe
     user_list = df['Sender'].unique().tolist()
