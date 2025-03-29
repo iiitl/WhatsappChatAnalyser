@@ -3,14 +3,131 @@ import preprocessor, helper
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-st.sidebar.title("Hello...!")
+# st.sidebar.title("Hello...!")
+st.markdown(
+    """
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+        }
+        .sidebar-title {
+            font-size: 40px;
+            color: #004e89;
+            font-weight:40px;
+            text-align: center;
+            
+        }
+
+       
+        .sidebar .sidebar-content {
+            background-color: #003049; /* Dark Blue */
+            padding: 20px;
+            border-right: 2px solid #;
+        }
+        .sidebar-section {
+            padding: 15px 10px;
+            border-bottom: 1px solid #ccc;
+        }
+        .sidebar-section h3 {
+            color: #3f88c5;
+            margin-bottom: 12px;
+            font-size:25px;
+        }
+        
+       
+        .stFileUploader {
+            border: 2px dashed #4caf50;
+            border-radius: 10px;
+            padding: 15px;
+           
+        }
+        .stFileUploader:hover {
+            border: 2px dashed #3FA34D;
+        }
+        
+       
+        div.stButton > button {
+            background-color: #3FA34D;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            border: none;
+            font-size: 16px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        
+        
+        div.stButton > button:hover {
+            background-color: #3FA34D;
+            
+        }
+        
+       
+        div.stSelectbox > label {
+            font-weight: bold;
+            color: #ff851b;
+        }
+        
+        div.stSelectbox > div {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 5px;
+        }
+        
+      
+        .emoji-container span {
+            margin-right: 5px;
+            font-size: 25px;
+        }
+        
+        
+        .tooltip {
+            font-size: 14px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+     
+        .chart-container {
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        
+        .heatmap-container {
+            padding: 20px;
+            border: 2px dashed #3FA34D;
+            border-radius: 12px;
+        }
+    </style>
+    """,
+    
+    unsafe_allow_html=True
+)
+
+
+st.sidebar.markdown('<div class="sidebar-title"> WhatsApp Chat Analyzer</div>', unsafe_allow_html=True)
+
 
 # Function to reset session state
 def reset_app():
     st.session_state.clear()  # Clear all session state variables
 
+
+
+st.sidebar.markdown('<div class="sidebar-section"><h3>📂 Upload File</h3></div>', unsafe_allow_html=True)
+
+
 # Sidebar for file upload using a key to store it in session state
 uploaded_file = st.sidebar.file_uploader("Choose a file", key="uploaded_file")
+
+
+st.sidebar.markdown('<div class="sidebar-section"><h3>🔄 Reset</h3></div>', unsafe_allow_html=True)
+
 
 # Reset button to clear uploaded file, selection, and data
 if st.sidebar.button("Reset App"):
@@ -35,6 +152,8 @@ if uploaded_file is not None:
         except Exception as e:
          st.error(f"An error occurred: {e}")
     
+    
+        st.sidebar.markdown('<div class="sidebar-section"><h3>👥 Select User</h3></div>', unsafe_allow_html=True)
     # Build user list from the dataframe
     user_list = df['Sender'].unique().tolist()
     user_list.sort()
@@ -45,9 +164,13 @@ if uploaded_file is not None:
         st.session_state.selected_user = "Overall"
     selected_user = st.sidebar.selectbox("Show analysis for", user_list, key="selected_user")
     
+    
+    
+    
     # Fetch initial stats (if needed)
     helper.fetch_stats(selected_user, df)
     
+    st.sidebar.markdown('<div class="sidebar-section"><h3>📊 Run Analysis</h3></div>', unsafe_allow_html=True)
     if st.sidebar.button("Show analysis"):
         # Display the stats
         st.title("Top Stats")
@@ -106,14 +229,14 @@ if uploaded_file is not None:
                 st.table(percent_data)
         
         # Display the wordcloud
-        st.title("Wordcloud")
+        st.title("🌥️ Wordcloud")
         fig, ax = plt.subplots()
         wc_img = helper.create_wordcloud(selected_user, df)
         ax.imshow(wc_img)
         st.pyplot(fig)
         
         # Display the most frequent words
-        st.title("Most frequent words")
+        st.title("🔤 Most Frequent Words")
         freq_words = helper.most_freq_words(selected_user, df)
         fig, ax = plt.subplots()
         ax.barh(freq_words['Word'], freq_words['count'])
@@ -121,7 +244,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
         
         # Display the timeline of messages
-        st.title("Monthly timeline of messages")
+        st.title("📅 Monthly Timeline of Messages")
         timeline = helper.monthly_timeline(selected_user, df)
         fig, ax = plt.subplots()
         ax.plot(timeline['time'], timeline['Message'], marker='o', color='r', linestyle='-', linewidth=2, markersize=6)
@@ -130,7 +253,7 @@ if uploaded_file is not None:
         plt.ylabel("Number of messages")
         st.pyplot(fig)
         
-        st.title("Daily timeline of messages")
+        st.title("📅 Daily Timeline of Messages")
         timeline = helper.daily_timeline(selected_user, df)
         fig, ax = plt.subplots(figsize=(12, 10))
         ax.plot(timeline['Date'], timeline['Message'], color='b', linestyle='-')
@@ -140,7 +263,7 @@ if uploaded_file is not None:
         st.pyplot(fig)
          
         # Display the activity map
-        st.title("Activity map")
+        st.title("📊 Activity Map") 
         col1, col2 = st.columns(2)
         with col1:
             st.header("Most active days")
@@ -159,7 +282,8 @@ if uploaded_file is not None:
             st.pyplot(fig)
         
         # Display the heatmap
-        st.title("Activity heatmap")
+     
+        st.title("🔥 Activity Heatmap")
         fig, ax = plt.subplots(figsize=(18, 10))
         heatmap_data = helper.activity_heatmap(selected_user, df)
         ax = sns.heatmap(heatmap_data.pivot_table(index='Day_name', columns='Interval', values='Message', aggfunc='count').fillna(0), ax=ax)
